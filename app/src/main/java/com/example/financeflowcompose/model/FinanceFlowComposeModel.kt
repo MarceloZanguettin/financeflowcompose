@@ -1,16 +1,14 @@
 package com.example.financeflowcompose.model
 
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.financeflowcompose.data.datasource.LocalDatasource
 
 class FinanceFlowComposeModel: ViewModel() {
-    val radioOptions = listOf("Receita", "Despesa")
+    val radioOptions = LocalDatasource.getTipos()
+
     var selectedOption by mutableStateOf(radioOptions[0])
         private set
     var valor by mutableStateOf("")
@@ -18,28 +16,55 @@ class FinanceFlowComposeModel: ViewModel() {
     var descricao by mutableStateOf("")
         private set
 
-    val categoriaReceita = listOf("Salário", "Freelance", "Outros")
-    val categoriaDespesa = listOf("Alimentação", "Transporte", "Educação", "Outros")
-    var expanded by mutableStateOf(false)
-        private set
+    private val categoriaReceita = LocalDatasource.getCategoriasReceita()
+    private val categoriaDespesa = LocalDatasource.getCategoriasDespesa()
+
     var currentCategoria by mutableStateOf(categoriaReceita)
         private set
     var selectedCategoria by mutableStateOf(currentCategoria[0])
         private set
 
-    var showDataPicker by mutableStateOf(false)
-        private set
-    var selectedDateMillis by mutableStateOf(Date().time)
+    val formasPagamento = LocalDatasource.getFormasPagamento()
+    var selectedFormaPagamento by mutableStateOf(formasPagamento[0])
         private set
 
-    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    var selectedDateMillis by mutableStateOf(System.currentTimeMillis())
+        private set
 
-    fun onDateSelected(millis: Long?) {
-        millis?.let {
-            selectedDateMillis = it
+    fun onTipoChange(novoTipo: String) {
+        selectedOption = novoTipo
+        currentCategoria = if (selectedOption == "Receita") {
+            categoriaReceita
+        } else {
+            categoriaDespesa
         }
+        selectedCategoria = currentCategoria[0]
     }
 
-    val selectedDateFormatted: String
-        get() = dateFormatter.format(Date(selectedDateMillis))
+    fun onValorChange(novoValor: String) {
+        valor = novoValor
+    }
+
+    fun onDescricaoChange(novaDescricao: String) {
+        descricao = novaDescricao
+    }
+
+    fun onCategoriaChange(novaCategoria: String) {
+        selectedCategoria = novaCategoria
+    }
+
+    fun onFormaPagamentoChange(novaForma: String) {
+        selectedFormaPagamento = novaForma
+
+    }
+
+    fun onDateChange(novoMillis: Long) {
+        selectedDateMillis = novoMillis
+    }
+
+    fun salvarLancamento() {
+
+        val formaPagamentoFinal = if (selectedOption == "Despesa") selectedFormaPagamento else null
+
+    }
 }
