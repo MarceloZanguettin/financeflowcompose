@@ -25,6 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -33,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,8 +44,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.financeflowcompose.model.FinanceFlowComposeModel
+import com.example.financeflowcompose.ui.LancamentosScreen
 import com.example.financeflowcompose.ui.theme.FinanceflowcomposeTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -53,11 +63,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinanceflowcomposeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    FlowFinanceScreen(
-                        model = viewModel(),
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                val navController = rememberNavController()
+                val model: FinanceFlowComposeModel = viewModel()
+                val snackbarHostState = remember { SnackbarHostState() }
+                val scope = rememberCoroutineScope()
+
+                NavHost(navController = navController, startDestination = "flow_finance") {
+                    composable("flow_finance") {
+                        Scaffold(
+                            modifier = Modifier.fillMaxSize(),
+                            snackbarHost = { SnackbarHost(snackbarHostState) }
+                        ) { innerPadding ->
+                            FlowFinanceScreen(
+                                model = model,
+                                navController = navController,
+                                modifier = Modifier.padding(innerPadding),
+                                snackbarHostState = snackbarHostState,
+                                scope = scope
+                            )
+                        }
+                    }
+                    composable("lancamentos") {
+                        LancamentosScreen(model = model)
+                    }
                 }
             }
         }
@@ -66,7 +94,13 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlowFinanceScreen(modifier: Modifier = Modifier, model: FinanceFlowComposeModel) {
+fun FlowFinanceScreen(
+    modifier: Modifier = Modifier,
+    model: FinanceFlowComposeModel,
+    navController: NavController,
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope
+) {
     var expandedCategoria by rememberSaveable { mutableStateOf(false) }
     var showDataPicker by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = model.selectedDateMillis)
@@ -236,17 +270,17 @@ fun FlowFinanceScreen(modifier: Modifier = Modifier, model: FinanceFlowComposeMo
                     ) },
             )
         }
-        PanelButtons(onSalvarClick = { model.salvarLancamento()})
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun FlowFinanceScreenPreview() {
-    FinanceflowcomposeTheme {
-        FlowFinanceScreen(model = FinanceFlowComposeModel())
+        PanelButtons(
+            onSalvarClick = {
+                model.salvarLancamento {
+                    model.limparCampos()
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Lançamento salvo com sucesso!")
+                    }
+                }
+            },
+            onVerLancamentosClick = { navController.navigate("lancamentos") }
+        )
     }
 }
 
@@ -286,7 +320,7 @@ fun PanelDespesa(
                     DropdownMenuItem(
                         text = { Text(text = selectionOption) },
                         onClick = {
-                            onFormaChange(selectionOption) // Notifica a função recebida
+                            onFormaChange(selectionOption)
                             expandedPagamento = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
@@ -297,23 +331,10 @@ fun PanelDespesa(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun PanelDespesaPreview() {
-    FinanceflowcomposeTheme {
-        PanelDespesa(
-            formasPagamento = listOf("Dinheiro", "PIX"),
-            selectedForma = "Dinheiro",
-            onFormaChange = {}
-        )
-    }
-}
-
 @Composable
 fun PanelButtons(
     onSalvarClick: () -> Unit,
+    onVerLancamentosClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -321,24 +342,16 @@ fun PanelButtons(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(
-            onClick = { /* TODO: Ação de Ver Lançamentos */ },
+            onClick = onVerLancamentosClick,
             modifier = Modifier.weight(1f).padding(end = 8.dp)
         ) {
             Text(text = "Ver Lançamentos")
         }
         Button(
-            onClick = onSalvarClick, // Chama a função recebida
+            onClick = onSalvarClick,
             modifier = Modifier.weight(1f).padding(start = 8.dp)
         ) {
             Text(text = "Lançar")
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PanelButtonsPreview() {
-    FinanceflowcomposeTheme {
-        PanelButtons(onSalvarClick = {})
     }
 }
