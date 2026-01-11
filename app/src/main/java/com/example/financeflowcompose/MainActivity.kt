@@ -78,10 +78,18 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
     var selectedCategoria by rememberSaveable { mutableStateOf(currentCategoria[0]) }
 
     var showDataPicker by rememberSaveable { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = Date().time)
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = model.selectedDateMillis)
     val selectedDate = datePickerState.selectedDateMillis?.let {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it))
     } ?: "Selecione a data"
+
+    datePickerState.selectedDateMillis?.let {
+        model.onDateSelected(it)
+    }
+
+    if (model.showDataPicker) {
+        DatePicker(state = datePickerState)
+    }
 
 
 

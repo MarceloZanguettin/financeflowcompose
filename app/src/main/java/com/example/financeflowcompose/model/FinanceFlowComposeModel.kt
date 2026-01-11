@@ -3,7 +3,6 @@ package com.example.financeflowcompose.model
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
@@ -21,7 +20,7 @@ class FinanceFlowComposeModel: ViewModel() {
 
     val categoriaReceita = listOf("Salário", "Freelance", "Outros")
     val categoriaDespesa = listOf("Alimentação", "Transporte", "Educação", "Outros")
-    var expanded by  mutableStateOf(false)
+    var expanded by mutableStateOf(false)
         private set
     var currentCategoria by mutableStateOf(categoriaReceita)
         private set
@@ -30,8 +29,17 @@ class FinanceFlowComposeModel: ViewModel() {
 
     var showDataPicker by mutableStateOf(false)
         private set
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = Date().time)
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it))
-    } ?: "Selecione a data"
+    var selectedDateMillis by mutableStateOf(Date().time)
+        private set
+
+    private val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+    fun onDateSelected(millis: Long?) {
+        millis?.let {
+            selectedDateMillis = it
+        }
+    }
+
+    val selectedDateFormatted: String
+        get() = dateFormatter.format(Date(selectedDateMillis))
 }
