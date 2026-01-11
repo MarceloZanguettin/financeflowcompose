@@ -83,6 +83,11 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it))
     } ?: "Selecione a data"
 
+    val formasPagamento = listOf("Cartão de Crédito", "Cartão de Débito", "Dinheiro", "PIX", "Transferencia Bancaria")
+    var expandedPagamento by rememberSaveable { mutableStateOf(false) }
+    var selectedFormaPagamento by rememberSaveable { mutableStateOf(formasPagamento[0]) }
+
+
 
     LaunchedEffect(selectedOption) {
         currentCategoria = if (selectedOption == "Receita") {
@@ -151,6 +156,46 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
                 }
             }
         }
+        if (selectedOption == "Despesa") {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Pagamento:",
+                    modifier = Modifier.padding(end = 16.dp)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expandedPagamento,
+                    onExpandedChange = { expandedPagamento = !expandedPagamento },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
+                        value = selectedFormaPagamento,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPagamento) },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expandedPagamento,
+                        onDismissRequest = { expandedPagamento = false },
+                    ){
+                        formasPagamento.forEach { selectionOptions ->
+                            DropdownMenuItem(
+                                text = { Text(text = selectionOptions) },
+                                onClick = {
+                                    selectedFormaPagamento = selectionOptions
+                                    expandedPagamento = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
+                }
+            }
+        }
         Row (verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Valor:",
@@ -159,7 +204,7 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = valor,
                 onValueChange = { valor = it },
-                label = { Text("Valor") },
+                label = { Text("R$ 0,00") },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
