@@ -241,7 +241,8 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
             )
         }
         Row (Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
             Button(
