@@ -243,28 +243,7 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
                     ) },
             )
         }
-        Row (Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(all = 8.dp)
-            ){
-                Text(text = "Ver Lançamentos")
-            }
-            Button(
-                onClick = { },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
-            ) {
-                Text(text = "Lançar")
-            }
-        }
+        PanelButtons()
     }
 }
 
@@ -330,6 +309,40 @@ fun PanelDespesa( modifier: Modifier = Modifier) {
 @Composable
 fun PanelDespesaPreview() {
     FinanceflowcomposeTheme {
-        PanelDespesa(Modifier)
+        PanelDespesa()
+    }
+}
+
+@Composable
+fun PanelButtons(modifier: Modifier = Modifier) {
+    Row (Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .weight(1f)
+                .padding(all = 8.dp)
+        ){
+            Text(text = "Ver Lançamentos")
+        }
+        Button(
+            onClick = { },
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+        ) {
+            Text(text = "Lançar")
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PanelButtonsPreview() {
+    FinanceflowcomposeTheme {
+        PanelButtons()
     }
 }
