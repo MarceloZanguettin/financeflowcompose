@@ -56,6 +56,28 @@ class FinanceFlowComposeModel: ViewModel() {
         }
     }
 
+    private fun String.toLocaleDouble(): Double {
+        return this.replace(',', '.').toDoubleOrNull() ?: 0.0
+    }
+
+    val totalReceitasFiltradas by derivedStateOf {
+        lancamentosFiltrados
+            .filter { it.tipo == "Receita" }
+            .sumOf { it.valor.toLocaleDouble() }
+    }
+
+    val totalDespesasFiltradas by derivedStateOf {
+        lancamentosFiltrados
+            .filter { it.tipo == "Despesa" }
+            .sumOf { it.valor.toLocaleDouble() }
+    }
+
+    val saldoTotal by derivedStateOf {
+        val totalReceitas = lancamentos.filter { it.tipo == "Receita" }.sumOf { it.valor.toLocaleDouble() }
+        val totalDespesas = lancamentos.filter { it.tipo == "Despesa" }.sumOf { it.valor.toLocaleDouble() }
+        totalReceitas - totalDespesas
+    }
+
     init {
         fetchLancamentos()
     }

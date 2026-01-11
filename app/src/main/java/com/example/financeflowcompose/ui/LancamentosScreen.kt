@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.financeflowcompose.model.FinanceFlowComposeModel
 import com.example.financeflowcompose.model.Lancamento
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -85,6 +86,29 @@ fun LancamentosScreen(model: FinanceFlowComposeModel) {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+
+        // Sumário
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Receitas", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(model.totalReceitasFiltradas),
+                    color = Color(0xFF008000),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Despesas", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(model.totalDespesasFiltradas),
+                    color = Color.Red,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
 
         // Filtros
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -214,7 +238,7 @@ fun LancamentoItem(lancamento: Lancamento, onDelete: () -> Unit) {
                 Text(text = formattedDate, style = MaterialTheme.typography.bodySmall)
             }
             Text(
-                text = "R$ ${lancamento.valor}",
+                text =  NumberFormat.getCurrencyInstance(Locale("pt", "BR")).format(lancamento.valor.replace(',', '.').toDoubleOrNull() ?: 0.0),
                 color = valorColor,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp)
