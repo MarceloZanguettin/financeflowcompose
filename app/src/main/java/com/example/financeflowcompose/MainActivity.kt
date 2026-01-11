@@ -83,10 +83,6 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it))
     } ?: "Selecione a data"
 
-    val formasPagamento = listOf("Cartão de Crédito", "Cartão de Débito", "Dinheiro", "PIX", "Transferencia Bancaria")
-    var expandedPagamento by rememberSaveable { mutableStateOf(false) }
-    var selectedFormaPagamento by rememberSaveable { mutableStateOf(formasPagamento[0]) }
-
 
 
     LaunchedEffect(selectedOption) {
@@ -156,46 +152,7 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
                 }
             }
         }
-        if (selectedOption == "Despesa") {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Pagamento:",
-                    modifier = Modifier.padding(end = 16.dp)
-                )
-                ExposedDropdownMenuBox(
-                    expanded = expandedPagamento,
-                    onExpandedChange = { expandedPagamento = !expandedPagamento },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth().menuAnchor(),
-                        value = selectedFormaPagamento,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPagamento) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expandedPagamento,
-                        onDismissRequest = { expandedPagamento = false },
-                    ){
-                        formasPagamento.forEach { selectionOptions ->
-                            DropdownMenuItem(
-                                text = { Text(text = selectionOptions) },
-                                onClick = {
-                                    selectedFormaPagamento = selectionOptions
-                                    expandedPagamento = false
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        if (selectedOption == "Despesa") { PanelDespesa() }
         Row (verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Valor:",
@@ -311,11 +268,68 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun FlowFinanceScreenPreview() {
     FinanceflowcomposeTheme {
         FlowFinanceScreen("Android")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PanelDespesa( modifier: Modifier = Modifier) {
+    val formasPagamento = listOf("Cartão de Crédito", "Cartão de Débito", "Dinheiro", "PIX", "Transferencia Bancaria")
+    var expandedPagamento by rememberSaveable { mutableStateOf(false) }
+    var selectedFormaPagamento by rememberSaveable { mutableStateOf(formasPagamento[0]) }
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Pagamento:",
+            modifier = Modifier.padding(end = 16.dp)
+        )
+        ExposedDropdownMenuBox(
+            expanded = expandedPagamento,
+            onExpandedChange = { expandedPagamento = !expandedPagamento },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                value = selectedFormaPagamento,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedPagamento) },
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+            )
+            ExposedDropdownMenu(
+                expanded = expandedPagamento,
+                onDismissRequest = { expandedPagamento = false },
+            ){
+                formasPagamento.forEach { selectionOptions ->
+                    DropdownMenuItem(
+                        text = { Text(text = selectionOptions) },
+                        onClick = {
+                            selectedFormaPagamento = selectionOptions
+                            expandedPagamento = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun PanelDespesaPreview() {
+    FinanceflowcomposeTheme {
+        PanelDespesa(Modifier)
     }
 }
