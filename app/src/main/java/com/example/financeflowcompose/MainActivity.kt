@@ -175,7 +175,7 @@ fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = descricao,
                 onValueChange = { descricao = it },
-                label = { Text("Ex.: Salário, Aluguel, Mercado") },
+                label = { Text("Ex.: Salário, Mercado") },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
