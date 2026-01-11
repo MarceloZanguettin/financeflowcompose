@@ -39,6 +39,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.saveable.rememberSaveable
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,17 +67,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun FlowFinanceScreen(name: String, modifier: Modifier = Modifier) {
     val radioOptions = listOf("Receita", "Despesa")
-    var selectedOption by remember { mutableStateOf(radioOptions[0]) }
-    var valor by remember { mutableStateOf("") }
-    var descricao by remember { mutableStateOf("") }
+    var selectedOption by rememberSaveable { mutableStateOf(radioOptions[0]) }
+    var valor by rememberSaveable { mutableStateOf("") }
+    var descricao by rememberSaveable { mutableStateOf("") }
 
     val categoriaReceita = listOf("Salário", "Freelance", "Outros")
     val categoriaDespesa = listOf("Alimentação", "Transporte", "Educação", "Outros")
-    var expanded by remember { mutableStateOf(false) }
-    var currentCategoria by remember { mutableStateOf(categoriaReceita) }
-    var selectedCategoria by remember { mutableStateOf(currentCategoria[0]) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    var currentCategoria by rememberSaveable { mutableStateOf(categoriaReceita) }
+    var selectedCategoria by rememberSaveable { mutableStateOf(currentCategoria[0]) }
 
-    var showDataPicker by remember { mutableStateOf(false) }
+    var showDataPicker by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = Date().time)
     val selectedDate = datePickerState.selectedDateMillis?.let {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(it))
